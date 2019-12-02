@@ -1,0 +1,5 @@
+parameters:
+    ignoreErrors:
+        - '#Function Neos\\Flow\\var_dump not found.#'
+        - '#Constant FLOW_PATH_DATA not found.#'
+        - '#Constant FLOW_PATH_PACKAGES not found.#'
