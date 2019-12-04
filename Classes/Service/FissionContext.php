@@ -5,6 +5,7 @@ namespace Flammel\Fission\Service;
 use Flammel\Zweig\Renderer\ComponentRenderer;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\Controller\ControllerContext;
 
 /**
@@ -41,6 +42,11 @@ class FissionContext
      * @var BackendDataProvider
      */
     private $backendDataProvider;
+
+    /**
+     * @var ActionRequest
+     */
+    private $actionRequest;
 
     /**
      * @return ControllerContext
@@ -133,5 +139,21 @@ class FissionContext
     public function getBackendDataProvider()
     {
         return $this->backendDataProvider;
+    }
+
+    /**
+     * @return ActionRequest
+     */
+    public function getActionRequest(): ActionRequest
+    {
+        return $this->actionRequest;
+    }
+
+    /**
+     * @param ActionRequest $actionRequest
+     */
+    public function setActionRequest(ActionRequest $actionRequest): void
+    {
+        $this->actionRequest = $actionRequest;
     }
 }

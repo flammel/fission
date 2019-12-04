@@ -105,6 +105,7 @@ class FissionView extends AbstractView
         $this->fissionContext->setInBackend($contentContext->isInBackend());
         $this->fissionContext->setSiteNode($contentContext->getCurrentSiteNode());
         $this->fissionContext->setComponentRenderer($componentRenderer);
+        $this->fissionContext->setActionRequest($this->controllerContext->getRequest());
     }
 
     /**
