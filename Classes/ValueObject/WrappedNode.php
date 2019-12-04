@@ -32,11 +32,15 @@ final class WrappedNode
 
     /**
      * @param string $key
-     * @return WrappedNode
+     * @return WrappedNode|null
      */
     public function child(string $key)
     {
-        return new WrappedNode($this->node->getNode($key));
+        $child = $this->node->getNode($key);
+        if (static::isWrappable($child)) {
+            return new WrappedNode($child);
+        }
+        return null;
     }
 
     /**
@@ -73,5 +77,14 @@ final class WrappedNode
     public function nodeTypeName(): string
     {
         return $this->node->getNodeType()->getName();
+    }
+
+    /**
+     * @param mixed $value
+     * @return bool
+     */
+    public static function isWrappable($value): bool
+    {
+        return $value instanceof NodeInterface || $value instanceof WrappedNode;
     }
 }
