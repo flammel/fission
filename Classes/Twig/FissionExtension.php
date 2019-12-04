@@ -60,12 +60,13 @@ class FissionExtension implements ExtensionInterface
     {
         return [
             new TwigFunction('dump', [FissionRuntimeExtension::class, 'dumpFunction']),
-            new TwigFunction('translate', [FissionRuntimeExtension::class, 'translateFunction']),
             new TwigFunction('wrap', [FissionRuntimeExtension::class, 'wrapFunction']),
             new TwigFunction('node', [FissionRuntimeExtension::class, 'nodeFunction']),
             new TwigFunction('backend', [FissionRuntimeExtension::class, 'backendFunction']),
             new TwigFunction('siteNode', [FissionRuntimeExtension::class, 'siteNodeFunction']),
             new TwigFunction('documentNode', [FissionRuntimeExtension::class, 'documentNodeFunction']),
+            new TwigFunction('nodeRoot', [FissionRuntimeExtension::class, 'nodeRootFunction']),
+            new TwigFunction('neos', [FissionRuntimeExtension::class, 'neosFunction']),
         ];
     }
 

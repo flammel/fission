@@ -2,14 +2,15 @@
 
 namespace Flammel\Fission\Twig;
 
+use Flammel\Fission\Exception\FissionException;
 use Flammel\Fission\Service\BackendDataProvider;
 use Flammel\Fission\Service\FissionContext;
+use Flammel\Fission\Service\NeosFunctions;
 use Flammel\Fission\ValueObject\WrappedNode;
 use Flammel\Zweig\Component\ComponentArguments;
 use Flammel\Zweig\Component\ComponentName;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\I18n\Translator;
 
 /**
  * @Flow\Scope("singleton")
@@ -18,25 +19,15 @@ class FissionRuntimeExtension
 {
     /**
      * @Flow\Inject
-     * @var Translator
-     */
-    protected $translator;
-
-    /**
-     * @Flow\Inject
      * @var FissionContext
      */
     protected $fissionContext;
 
     /**
-     * @param string $key
-     * @param string $package
-     * @return string
+     * @Flow\Inject
+     * @var NeosFunctions
      */
-    public function translateFunction(string $key, string $package): string
-    {
-        return $this->translator->translateById($key, [], [], null, 'Main', $package);
-    }
+    protected $neosFunctions;
 
     /**
      * @param mixed $value
@@ -62,32 +53,26 @@ class FissionRuntimeExtension
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
+     * @throws FissionException
      */
     public function nodeFunction($node, ...$props): string
     {
+        if (!WrappedNode::isWrappable($node)) {
+            throw new FissionException('Invalid first argument passed to node function');
+        }
         $node = new WrappedNode($node);
         array_unshift($props, $node);
         $rendered = $this->fissionContext->getComponentRenderer()->render(
             new ComponentName($node->nodeTypeName()),
             new ComponentArguments($props)
         );
-        return $this->addBackendData($rendered, $node);
-    }
-
-    /**
-     * @param string $rendered
-     * @param WrappedNode $node
-     * @return string
-     */
-    private function addBackendData(string $rendered, WrappedNode $node): string
-    {
         return $rendered . PHP_EOL . $this->fissionContext->getBackendDataProvider()->nodeInformation($node->unwrap());
     }
 
     /**
      * @return BackendDataProvider
      */
-    public function backendFunction()
+    public function backendFunction(): BackendDataProvider
     {
         return $this->fissionContext->getBackendDataProvider();
     }
@@ -95,7 +80,7 @@ class FissionRuntimeExtension
     /**
      * @return WrappedNode
      */
-    public function siteNodeFunction()
+    public function siteNodeFunction(): WrappedNode
     {
         return new WrappedNode($this->fissionContext->getSiteNode());
     }
@@ -103,8 +88,24 @@ class FissionRuntimeExtension
     /**
      * @return WrappedNode
      */
-    public function documentNodeFunction()
+    public function documentNodeFunction(): WrappedNode
     {
         return new WrappedNode($this->fissionContext->getDocumentNode());
+    }
+
+    /**
+     * @return string
+     */
+    public function nodeRootFunction($node): string
+    {
+        return $this->fissionContext->getBackendDataProvider()->nodeRootElementAttributes(new WrappedNode($node));
+    }
+
+    /**
+     * @return NeosFunctions
+     */
+    public function neosFunction(): NeosFunctions
+    {
+        return $this->neosFunctions;
     }
 }
