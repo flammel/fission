@@ -1,0 +1,5 @@
+-
+  #  requestFilter: 'isPackage("Neos.Neos") && isController("Frontend\Node") && false'
+  requestFilter: 'isPackage("Neos.Neos") && isController("Frontend\Node")'
+  viewObjectName: 'Flammel\Fission\View\FissionView'
+  options: {}
