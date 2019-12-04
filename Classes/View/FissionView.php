@@ -19,6 +19,7 @@ use Flammel\Zweig\Component\ComponentArguments;
 use Flammel\Zweig\Component\ComponentName;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\Flow\Annotations as Flow;
+use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\View\AbstractView;
 use Neos\Flow\ObjectManagement\ObjectManagerInterface;
 use Neos\Neos\Domain\Service\ContentContext;
@@ -115,7 +116,10 @@ class FissionView extends AbstractView
         $this->fissionContext->setInBackend($contentContext->isInBackend());
         $this->fissionContext->setSiteNode($contentContext->getCurrentSiteNode());
         $this->fissionContext->setComponentRenderer($componentRenderer);
-        $this->fissionContext->setActionRequest($this->controllerContext->getRequest());
+        $request = $this->controllerContext->getRequest();
+        if ($request instanceof ActionRequest) {
+            $this->fissionContext->setActionRequest($request);
+        }
     }
 
     /**

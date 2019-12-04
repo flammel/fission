@@ -63,7 +63,10 @@ class NeosFunctions
     public function resourceUri($resource): string
     {
         if ($resource instanceof PersistentResource) {
-            return $this->resourceManager->getPublicPersistentResourceUri($resource);
+            $uri = $this->resourceManager->getPublicPersistentResourceUri($resource);
+            if (is_string($uri)) {
+                return $uri;
+            }
         }
         return 'resource uri failed TODO';
     }
