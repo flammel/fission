@@ -82,6 +82,16 @@ class FissionView extends AbstractView
         return $result;
     }
 
+    /**
+     * This method is called by NodeController and therefore must be defined.
+     *
+     * @return bool
+     */
+    public function canRenderWithNodeAndPath(): bool
+    {
+        return true;
+    }
+
     protected function getLoader(array $configuredPaths): LoaderInterface
     {
         $paths = [];
