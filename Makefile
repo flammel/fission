@@ -9,6 +9,10 @@ check: ## Run static code checks
 	./vendor/bin/phpstan analyze --level max Classes
 	./vendor/bin/phpcs --standard=PSR12 Classes
 
+.PHONY: cbf
+cbf: ## Run automatic fixes for codesniffer warnings
+	./vendor/bin/phpcbf --standard=PSR12 Classes
+
 # From https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .PHONY: help
 help:

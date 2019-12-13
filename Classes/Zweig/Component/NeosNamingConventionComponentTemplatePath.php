@@ -3,7 +3,7 @@
 namespace Flammel\Fission\Zweig\TemplatePath;
 
 use Flammel\Zweig\Component\ComponentName;
-use Flammel\Zweig\TemplatePath\TemplatePath;
+use Flammel\Zweig\Component\TemplatePath;
 
 final class NeosNamingConventionTemplatePath implements TemplatePath
 {
@@ -24,6 +24,9 @@ final class NeosNamingConventionTemplatePath implements TemplatePath
         $this->path = implode(DIRECTORY_SEPARATOR, $parts) . '.twig';
     }
 
+    /**
+     * @return string
+     */
     public function getPath(): string
     {
         return $this->path;
