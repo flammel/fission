@@ -8,6 +8,9 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Neos\Ui\Domain\Service\ConfigurationRenderingService;
 use Neos\Neos\Ui\Fusion\Helper\NodeInfoHelper;
 
+/**
+ * @Flow\Scope("singleton")
+ */
 class ActiveBackendDataProvider implements BackendDataProvider
 {
     /**

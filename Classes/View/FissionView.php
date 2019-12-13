@@ -8,9 +8,7 @@ use Flammel\Fission\Service\FissionContext;
 use Flammel\Fission\Twig\FissionRuntimeLoader;
 use Flammel\Fission\ValueObject\WrappedNode;
 use Flammel\Fission\Zweig\Presenter\NeosNamingConventionPresenter;
-use Flammel\Fission\Zweig\Presenter\RegistrationBasedPresenterFactory;
-use Flammel\Zweig\Presenter\Presenter;
-use Flammel\Zweig\Presenter\PresenterFactory;
+use Flammel\Zweig\Exception\ZweigException;
 use Flammel\Zweig\Renderer\ComponentRenderer;
 use Flammel\Zweig\Twig\ZweigRuntimeLoader;
 use Flammel\Zweig\Twig\ZweigExtension;
@@ -22,6 +20,7 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\View\AbstractView;
 use Neos\Flow\ObjectManagement\ObjectManagerInterface;
+use Neos\Flow\Persistence\Exception\IllegalObjectTypeException;
 use Neos\Neos\Domain\Service\ContentContext;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -50,13 +49,12 @@ class FissionView extends AbstractView
     /**
      * @return string
      * @throws FissionException
-     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
+     * @throws IllegalObjectTypeException
+     * @throws ZweigException
      */
     public function render()
     {
+        $start = microtime(true);
         $currentNode = $this->getCurrentNode();
 
         $loader = $this->getLoader($this->config['templateDirectories']);
@@ -67,12 +65,12 @@ class FissionView extends AbstractView
             'autoescape' => false
         ]);
 
-        $presenterFactory = $this->getPresenterFactory($this->config['presenters']);
-        $componentRenderer = new ComponentRenderer($twig, $presenterFactory);
+        $presenter = new NeosNamingConventionPresenter();
+        $componentRenderer = new ComponentRenderer($twig, $presenter);
         $twig->addRuntimeLoader(new ZweigRuntimeLoader(new ZweigRuntimeExtension($componentRenderer)));
         $twig->addExtension(new ZweigExtension());
         $twig->addRuntimeLoader(new FissionRuntimeLoader($this->objectManager));
-        $twig->addExtension(new FissionExtension());
+        $twig->addExtension(new FissionExtension($this->config['functions']));
 
         $this->setUpFissionContext($currentNode, $componentRenderer);
         $wrappedNode = new WrappedNode($currentNode);
@@ -80,6 +78,7 @@ class FissionView extends AbstractView
             new ComponentName($wrappedNode->nodeTypeName()),
             new ComponentArguments([$wrappedNode])
         );
+        file_put_contents('renderperf.log', 'fission took ' . (microtime(true) - $start) . PHP_EOL, FILE_APPEND);
         return $result;
     }
 
@@ -105,7 +104,7 @@ class FissionView extends AbstractView
     /**
      * @param NodeInterface $currentNode
      * @param ComponentRenderer $componentRenderer
-     * @throws \Neos\Flow\Persistence\Exception\IllegalObjectTypeException
+     * @throws IllegalObjectTypeException
      */
     protected function setUpFissionContext(NodeInterface $currentNode, ComponentRenderer $componentRenderer): void
     {
@@ -120,27 +119,6 @@ class FissionView extends AbstractView
         if ($request instanceof ActionRequest) {
             $this->fissionContext->setActionRequest($request);
         }
-    }
-
-    /**
-     * @param array $configuredPresenters
-     * @return PresenterFactory
-     * @throws FissionException
-     */
-    protected function getPresenterFactory(array $configuredPresenters): PresenterFactory
-    {
-        $presenterFactory = new RegistrationBasedPresenterFactory(new NeosNamingConventionPresenter());
-        foreach ($configuredPresenters as $component => $presenterClass) {
-            $presenter = $this->objectManager->get($presenterClass);
-            if ($presenter instanceof Presenter) {
-                $presenterFactory->register(new ComponentName($component), $presenter);
-            } else {
-                throw new FissionException(
-                    'Configured presenter ' . $presenterClass . ' does not implement Presenter interface'
-                );
-            }
-        }
-        return $presenterFactory;
     }
 
     /**

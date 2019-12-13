@@ -9,7 +9,7 @@ use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\Controller\ControllerContext;
 
 /**
- *@Flow\Scope("singleton")
+ * @Flow\Scope("singleton")
  */
 class FissionContext
 {

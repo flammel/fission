@@ -2,6 +2,7 @@
 
 namespace Flammel\Fission\Twig;
 
+use Neos\Flow\Annotations as Flow;
 use Twig\Extension\ExtensionInterface;
 use Twig\NodeVisitor\NodeVisitorInterface;
 use Twig\TokenParser\TokenParserInterface;
@@ -9,8 +10,28 @@ use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Twig\TwigTest;
 
+/**
+ * @Flow\Proxy(false)
+ */
 class FissionExtension implements ExtensionInterface
 {
+    /**
+     * @param TwigFunction[] $functions
+     */
+    private $functions = [];
+
+    /**
+     * @param array<string, string> $configuredFunctions
+     */
+    public function __construct(array $configuredFunctions)
+    {
+        foreach ($configuredFunctions as $name => $class) {
+            /** @var callable $callable */
+            $callable = [$class, 'invoke'];
+            $this->functions[] = new TwigFunction($name, $callable);
+        }
+    }
+
     /**
      * Returns the token parser instances to add to the existing list.
      *
@@ -58,16 +79,7 @@ class FissionExtension implements ExtensionInterface
      */
     public function getFunctions()
     {
-        return [
-            new TwigFunction('dump', [FissionRuntimeExtension::class, 'dumpFunction']),
-            new TwigFunction('wrap', [FissionRuntimeExtension::class, 'wrapFunction']),
-            new TwigFunction('node', [FissionRuntimeExtension::class, 'nodeFunction']),
-            new TwigFunction('backend', [FissionRuntimeExtension::class, 'backendFunction']),
-            new TwigFunction('siteNode', [FissionRuntimeExtension::class, 'siteNodeFunction']),
-            new TwigFunction('documentNode', [FissionRuntimeExtension::class, 'documentNodeFunction']),
-            new TwigFunction('nodeRoot', [FissionRuntimeExtension::class, 'nodeRootFunction']),
-            new TwigFunction('neos', [FissionRuntimeExtension::class, 'neosFunction']),
-        ];
+        return $this->functions;
     }
 
     /**

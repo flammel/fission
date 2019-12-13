@@ -4,7 +4,11 @@ namespace Flammel\Fission\ValueObject;
 
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\ContentRepository\Exception\NodeException;
+use Neos\Flow\Annotations as Flow;
 
+/**
+ * @Flow\Proxy(false)
+ */
 final class WrappedNode
 {
     /**

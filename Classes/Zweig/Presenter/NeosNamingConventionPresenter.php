@@ -2,25 +2,29 @@
 
 namespace Flammel\Fission\Zweig\Presenter;
 
-use Flammel\Fission\Zweig\TemplatePath\NeosNamingConventionTemplatePath;
+use Flammel\Fission\Zweig\Component\NeosNamingConventionComponentTemplatePath;
 use Flammel\Zweig\Component\ComponentArguments;
 use Flammel\Zweig\Component\ComponentContext;
 use Flammel\Zweig\Component\ComponentName;
-use Flammel\Zweig\Presenter\Presentable;
+use Flammel\Zweig\Component\Component;
 use Flammel\Zweig\Presenter\Presenter;
+use Neos\Flow\Annotations as Flow;
 
+/**
+ * @Flow\Proxy(false)
+ */
 final class NeosNamingConventionPresenter implements Presenter
 {
     /**
      * @param ComponentName $name
      * @param ComponentArguments $arguments
-     * @return Presentable
+     * @return Component
      */
-    public function present(ComponentName $name, ComponentArguments $arguments): Presentable
+    public function present(ComponentName $name, ComponentArguments $arguments): Component
     {
-        return new Presentable(
-            new NeosNamingConventionTemplatePath($name),
-            new ComponentContext($arguments->getArguments())
+        return new Component(
+            new NeosNamingConventionComponentTemplatePath($name),
+            new ComponentContext($arguments->toArray())
         );
     }
 }

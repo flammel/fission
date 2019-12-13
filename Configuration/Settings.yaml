@@ -1,4 +1,6 @@
 Flammel:
   Fission:
     templateDirectories: []
-    presenters: []
+    functions:
+      node: Flammel\Fission\Functions\Node
+      fission: Flammel\Fission\Functions\Fission

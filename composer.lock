@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae47564301dc2edc234522065cebfa36",
+    "content-hash": "5e1626b5eeb1fba87b7146abeb70a702",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1328,12 +1328,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/flammel/zweig.git",
-                "reference": "4c903068f7eb089792dcb8bcb6450509b98df759"
+                "reference": "7493c43b1f2fc3fed1398d2da5d33508c4f3e969"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/flammel/zweig/zipball/4c903068f7eb089792dcb8bcb6450509b98df759",
-                "reference": "4c903068f7eb089792dcb8bcb6450509b98df759",
+                "url": "https://api.github.com/repos/flammel/zweig/zipball/7493c43b1f2fc3fed1398d2da5d33508c4f3e969",
+                "reference": "7493c43b1f2fc3fed1398d2da5d33508c4f3e969",
                 "shasum": ""
             },
             "require": {
@@ -1364,7 +1364,7 @@
                 "source": "https://github.com/flammel/zweig/tree/master",
                 "issues": "https://github.com/flammel/zweig/issues"
             },
-            "time": "2019-12-02T18:42:12+00:00"
+            "time": "2019-12-13T12:31:29+00:00"
         },
         {
             "name": "gedmo/doctrine-extensions",

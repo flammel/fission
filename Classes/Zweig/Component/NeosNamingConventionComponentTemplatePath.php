@@ -1,11 +1,15 @@
 <?php
 
-namespace Flammel\Fission\Zweig\TemplatePath;
+namespace Flammel\Fission\Zweig\Component;
 
 use Flammel\Zweig\Component\ComponentName;
-use Flammel\Zweig\Component\TemplatePath;
+use Flammel\Zweig\Component\ComponentTemplatePath;
+use Neos\Flow\Annotations as Flow;
 
-final class NeosNamingConventionTemplatePath implements TemplatePath
+/**
+ * @Flow\Proxy(false)
+ */
+final class NeosNamingConventionComponentTemplatePath implements ComponentTemplatePath
 {
     /**
      * @var string
