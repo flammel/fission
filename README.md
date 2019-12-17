@@ -44,7 +44,7 @@ This Twig file is the first _component_ that is rendered.
 
 Fission uses the [Zweig](https://github.com/flammel/zweig) library to implement components.
 Zweig basically provides an enhanced way to include templates in other templates.
-It can do slightly more than Twig's `include`, but the exact differences are out of scope for this introduction.
+It is not a direct replacement for Twig's native `include`, but the exact differences are out of scope for this introduction.
 In Zweig, the function `component("templateName")` includes a template with the name `templateName`.
 Let's say we defined our navigation in a Twig file:
 
@@ -58,7 +58,6 @@ Let's say we defined our navigation in a Twig file:
 ```
 
 We can include the navigation in another template using the `component` function:
-
 
 ```
 {# file: Layout.twig #}
@@ -94,14 +93,14 @@ templates, we use the term _component_ to refer to any template that is included
 
 The `component` function allows us to pass arguments to the included file.
 We call these arguments _props_.
-Props are passed to a component by providing additional arguments to the `component` function:
+Props are passed to a component by providing additional named arguments to the `component` function:
 
 ```
 {# file: ContactForm.twig #}
 
 <form>
     ...
-    {{ component("FancyButton", "Send", "submit" }}
+    {{ component("FancyButton", label="Send", type="submit" }}
 </form>
 ```
 
@@ -110,36 +109,23 @@ In the included file, these values are available via the `props` variable:
 ```
 {# file: FancyButton.twig #}
 
-<button type="{{ props[1] }}" class="fancy">
-    {{ props[0] }}
+<button type="{{ props.type }}" class="fancy">
+    {{ props.label }}
 </button>
 ```
 
-Since accessing props via indices is cumbersome, error prone and hard to read, I recommend defining variables at the beginning of the component:
+To make a prop optional, we can use Twig's native `default` filter:
 
 ```
 {# file: FancyButton.twig #}
-{% set content = props[0] %}
-{% set type = props[1] %}
+{% set type = props.type|default("button") %}
 
 <button type="{{ type }}" class="fancy">
-    {{ content }}
+    {{ props.label }}
 </button>
 ```
 
-This also serves as documentation on what props a component expects and makes it easy to define optional props:
-
-```
-{# file: FancyButton.twig #}
-{% set content = props[0] %}
-{% set type = props[1]|default("button") %}
-
-<button type="{{ type }}" class="fancy">
-    {{ content }}
-</button>
-```
-
-Now invoking this component with only one prop, like `{{ component("FancyButton", "Save") }}`, will render
+Now invoking this component with only one prop, like `{{ component("FancyButton", label="Save") }}`, will render
 
 ```
 <button type="button" class="fancy">Save</button>
@@ -154,12 +140,11 @@ and uses a prop for the page title:
 
 ```
 {# file: Layout.twig #}
-{% set title = props[0] %}
 
 <!doctype html>
 <html>
     <head>
-        <title>{{ title }}</title>
+        <title>{{ props.title }}</title>
     </head>
     <body>
         {% slot "body" %}
@@ -175,7 +160,7 @@ We pass props to the component using the `with` keyword and fill slots using the
 ```
 {# file: AboutUs.twig #}
 
-{% component "Layout" with ["About Us"] %}
+{% component "Layout" with {"title": "About Us"} %}
     {% fill "body" %}
         <h1>About us</h1>
         <p>Lorem ipsum ...</p>
@@ -209,9 +194,9 @@ The Twig template for the node `Neos.Neos:Page` might look like this:
 
 ```
 {# file: Neos.Neos/Page.twig #}
-{% set node = props[0] %}
+{% set node = props.node %}
 
-{% component "Layout" with [node.prop("title")] %}
+{% component "Layout" with {"title": node.prop("title")} %}
     {% fill "body" %}
         <main>
             {{ node.prop("content") }}
@@ -225,25 +210,25 @@ But what if it contains a node, as is common in Neos?
 Since node type names correspond directly to component names, we could render the node in the `content` property like this:
 
 ```
-{{ component(node.prop("content").nodeTypeName(), node.prop("content")) }}
+{{ component(node.prop("content").nodeTypeName(), node=node.prop("content")) }}
 ```
 
-We pass the node as the first prop so that we can access its properties in the included file.
+We pass the node as a prop so that we can access its properties in the included file.
 Fission provides a helper function called `node` because rendering nodes is a common task and the above syntax is rather verbose:
 
 ```
-{{ node(aNode, "here", "be", "props") }}
+{{ node(aNode, prop1="...", prop2="...") }}
 {# is the same as #}
-{{ component(aNode.nodeTypeName(), aNode, "here", "be", "props") }}
+{{ component(aNode.nodeTypeName(), node=aNode, prop1="...", prop2="...") }}
 ```
 
 So if the `content` node property contains a node, we have to adjust the template like this:
 
 ```
 {# file: Neos.Neos/Page.twig #}
-{% set node = props[0] %}
+{% set node = props.node %}
 
-{% component "Layout" with [node.prop("title")] %}
+{% component "Layout" with {"title": node.prop("title")} %}
     {% fill "body" %}
         <main>
             {{ node(node.prop("content")) }}             {# only this line changed #}
@@ -294,10 +279,9 @@ The function is used like any other Twig function:
 
 ```
 {# file: Product.twig #}
-{% set node = props[0] %}
-{% set additionalData = productData(node) %}
+{% set additionalData = productData(props.node) %}
 
-<h1>{{ node.prop("title") }}</h1>
+<h1>{{ props.node.prop("title") }}</h1>
 {{ additionalData.importantInformation }}
 ```
 
@@ -307,7 +291,8 @@ The name of the function is determined by the key in the settings file.
 The above approach to defining functions has two drawbacks:
 First, we have to change the settings and implement the interface for every function we want to define.
 Second, if two packages define two functions with the same name, it is not immediately clear which implementation will be used.
-To address these issues, I recommend creating at most _one_ `FissionFunction` implementation per package, using a name that we expect to be unique.
+To address these issues, I recommend creating a "container" `FissionFunction` implementation,
+using a name that is unlikely to be used by other packages.
 We can then define methods on this class and use those as functions in our templates:
 
 ```
@@ -339,10 +324,9 @@ class MyPackageFunction implements FissionFunction
 
 ```
 {# file: Product.twig #}
-{% set node = props[0] %}
-{% set additionalData = myPackage().productData(node) %}
+{% set additionalData = myPackage().productData(props.node) %}
 
-<h1>{{ node.prop("title") }}</h1>
+<h1>{{ props.node.prop("title") }}</h1>
 {{ additionalData.importantInformation }}
 ```
 

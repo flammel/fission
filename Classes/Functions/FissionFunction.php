@@ -7,9 +7,9 @@ use Flammel\Fission\Exception\FissionException;
 interface FissionFunction
 {
     /**
-     * @param mixed ...$args
+     * @param array $args
      * @return mixed|void
      * @throws FissionException
      */
-    public function invoke(...$args);
+    public function invoke(array $args);
 }

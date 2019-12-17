@@ -76,7 +76,7 @@ class FissionView extends AbstractView
         $wrappedNode = new WrappedNode($currentNode);
         $result = $componentRenderer->render(
             new ComponentName($wrappedNode->nodeTypeName()),
-            new ComponentArguments([$wrappedNode])
+            new ComponentArguments(['node' => $wrappedNode])
         );
         file_put_contents('renderperf.log', 'fission took ' . (microtime(true) - $start) . PHP_EOL, FILE_APPEND);
         return $result;

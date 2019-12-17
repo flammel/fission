@@ -22,17 +22,17 @@ class Node implements FissionFunction
     protected $fissionContext;
 
     /**
-     * @param mixed ...$args
+     * @param array $args
      * @return mixed|void
      * @throws FissionException
      */
-    public function invoke(...$args)
+    public function invoke(array $args = [])
     {
         if (!WrappedNode::isWrappable($args[0])) {
             throw new FissionException('Invalid first argument passed to node function');
         }
         $node = new WrappedNode($args[0]);
-        $args[0] = $node;
+        $args['node'] = $node;
         try {
             $rendered = $this->fissionContext->getComponentRenderer()->render(
                 new ComponentName($node->nodeTypeName()),

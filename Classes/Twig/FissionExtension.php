@@ -25,10 +25,18 @@ class FissionExtension implements ExtensionInterface
      */
     public function __construct(array $configuredFunctions)
     {
-        foreach ($configuredFunctions as $name => $class) {
+        foreach ($configuredFunctions as $name => $settings) {
+            if (is_string($settings)) {
+                $class = $settings;
+                $options = [];
+            } else {
+                $class = $settings['class'];
+                $options = $settings['options'];
+            }
+            $options['is_variadic'] = true;
             /** @var callable $callable */
             $callable = [$class, 'invoke'];
-            $this->functions[] = new TwigFunction($name, $callable);
+            $this->functions[] = new TwigFunction($name, $callable, $options);
         }
     }
 
