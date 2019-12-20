@@ -3,7 +3,6 @@
 namespace Flammel\Fission\Service;
 
 use Flammel\Fission\ValueObject\WrappedNode;
-use Neos\ContentRepository\Domain\Model\NodeInterface;
 
 interface BackendDataProvider
 {
@@ -13,16 +12,16 @@ interface BackendDataProvider
     public function active(): bool;
 
     /**
+     * @param WrappedNode $documentNode
      * @return string
-     * @throws \Neos\Eel\Exception
      */
-    public function documentInformation(): string;
+    public function documentInformation(WrappedNode $documentNode): string;
 
     /**
-     * @param NodeInterface $node
+     * @param WrappedNode $node
      * @return string
      */
-    public function nodeInformation(NodeInterface $node): string;
+    public function nodeInformation(WrappedNode $node): string;
 
     /**
      * @param WrappedNode $node

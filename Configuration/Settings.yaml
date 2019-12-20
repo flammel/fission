@@ -2,5 +2,5 @@ Flammel:
   Fission:
     templateDirectories: []
     functions:
-      node: Flammel\Fission\Functions\Node
-      fission: Flammel\Fission\Functions\Fission
+      node: [Flammel\Fission\Functions\Node, '__invoke']
+      fission: [Flammel\Fission\Functions\Fission, '__invoke']

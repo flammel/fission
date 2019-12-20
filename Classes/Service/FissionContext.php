@@ -7,12 +7,19 @@ use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\ActionRequest;
 use Neos\Flow\Mvc\Controller\ControllerContext;
+use Neos\Flow\Persistence\Exception\IllegalObjectTypeException;
+use Neos\Neos\Domain\Service\ContentContext;
 
 /**
  * @Flow\Scope("singleton")
  */
 class FissionContext
 {
+    /**
+     * @var ContentContext
+     */
+    private $contentContext;
+
     /**
      * @var ControllerContext
      */
@@ -21,17 +28,7 @@ class FissionContext
     /**
      * @var NodeInterface
      */
-    private $documentNode;
-
-    /**
-     * @var NodeInterface
-     */
     private $siteNode;
-
-    /**
-     * @var bool
-     */
-    private $inBackend;
 
     /**
      * @var ComponentRenderer
@@ -49,35 +46,42 @@ class FissionContext
     private $actionRequest;
 
     /**
+     * @param ContentContext $contentContext
+     * @param ControllerContext $controllerContext
+     * @param ComponentRenderer $componentRenderer
+     */
+    public function initialize(
+        ContentContext $contentContext,
+        ControllerContext $controllerContext,
+        ComponentRenderer $componentRenderer
+    ): void {
+        $this->contentContext = $contentContext;
+        $this->controllerContext = $controllerContext;
+        $this->siteNode = $contentContext->getCurrentSiteNode();
+        $this->componentRenderer = $componentRenderer;
+        $request = $controllerContext->getRequest();
+        if ($request instanceof ActionRequest) {
+            $this->actionRequest = $request;
+        }
+
+        try {
+            $inBackend = $contentContext->isInBackend();
+        } catch (IllegalObjectTypeException $e) {
+            $inBackend = false;
+        }
+        if ($inBackend) {
+            $this->backendDataProvider = new ActiveBackendDataProvider();
+        } else {
+            $this->backendDataProvider = new EmptyBackendDataProvider();
+        }
+    }
+
+    /**
      * @return ControllerContext
      */
     public function getControllerContext(): ControllerContext
     {
         return $this->controllerContext;
-    }
-
-    /**
-     * @param ControllerContext $controllerContext
-     */
-    public function setControllerContext(ControllerContext $controllerContext): void
-    {
-        $this->controllerContext = $controllerContext;
-    }
-
-    /**
-     * @return NodeInterface
-     */
-    public function getDocumentNode(): NodeInterface
-    {
-        return $this->documentNode;
-    }
-
-    /**
-     * @param NodeInterface $documentNode
-     */
-    public function setDocumentNode(NodeInterface $documentNode): void
-    {
-        $this->documentNode = $documentNode;
     }
 
     /**
@@ -89,48 +93,11 @@ class FissionContext
     }
 
     /**
-     * @param NodeInterface $siteNode
-     */
-    public function setSiteNode(NodeInterface $siteNode): void
-    {
-        $this->siteNode = $siteNode;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isInBackend(): bool
-    {
-        return $this->inBackend;
-    }
-
-    /**
-     * @param bool $inBackend
-     */
-    public function setInBackend(bool $inBackend): void
-    {
-        $this->inBackend = $inBackend;
-        if ($inBackend) {
-            $this->backendDataProvider = new ActiveBackendDataProvider();
-        } else {
-            $this->backendDataProvider = new EmptyBackendDataProvider();
-        }
-    }
-
-    /**
      * @return ComponentRenderer
      */
     public function getComponentRenderer(): ComponentRenderer
     {
         return $this->componentRenderer;
-    }
-
-    /**
-     * @param ComponentRenderer $componentRenderer
-     */
-    public function setComponentRenderer(ComponentRenderer $componentRenderer): void
-    {
-        $this->componentRenderer = $componentRenderer;
     }
 
     /**
@@ -147,13 +114,5 @@ class FissionContext
     public function getActionRequest(): ActionRequest
     {
         return $this->actionRequest;
-    }
-
-    /**
-     * @param ActionRequest $actionRequest
-     */
-    public function setActionRequest(ActionRequest $actionRequest): void
-    {
-        $this->actionRequest = $actionRequest;
     }
 }

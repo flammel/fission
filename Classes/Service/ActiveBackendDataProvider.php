@@ -3,7 +3,6 @@
 namespace Flammel\Fission\Service;
 
 use Flammel\Fission\ValueObject\WrappedNode;
-use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\Flow\Annotations as Flow;
 use Neos\Neos\Ui\Domain\Service\ConfigurationRenderingService;
 use Neos\Neos\Ui\Fusion\Helper\NodeInfoHelper;
@@ -46,13 +45,14 @@ class ActiveBackendDataProvider implements BackendDataProvider
     }
 
     /**
+     * @param WrappedNode $documentNode
      * @return string
      * @throws \Neos\Eel\Exception
      */
-    public function documentInformation(): string
+    public function documentInformation(WrappedNode $documentNode): string
     {
         $context = [
-            'documentNode' => $this->fissionContext->getDocumentNode(),
+            'documentNode' => $documentNode->unwrap(),
             'site' => $this->fissionContext->getSiteNode(),
             'controllerContext' => $this->fissionContext->getControllerContext(),
         ];
@@ -65,14 +65,15 @@ class ActiveBackendDataProvider implements BackendDataProvider
     }
 
     /**
-     * @param NodeInterface $node
+     * @param WrappedNode $node
      * @return string
      */
-    public function nodeInformation(NodeInterface $node): string
+    public function nodeInformation(WrappedNode $node): string
     {
         if (!$this->active()) {
             return '';
         }
+        $node = $node->unwrap();
         $path = $node->getContextPath();
         $data = $this->nodeInfoHelper->renderNodeWithPropertiesAndChildrenInformation($node);
         $serializedNode = json_encode($data, JSON_PRETTY_PRINT);
@@ -81,6 +82,10 @@ class ActiveBackendDataProvider implements BackendDataProvider
         })();</script>';
     }
 
+    /**
+     * @param WrappedNode $node
+     * @return string
+     */
     public function nodeRootElementAttributes(WrappedNode $node): string
     {
         return ' data-__neos-node-contextpath="' . $node->unwrap()->getContextPath() . '"';

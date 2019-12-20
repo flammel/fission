@@ -2,6 +2,7 @@
 
 namespace Flammel\Fission\ValueObject;
 
+use Flammel\Fission\Exception\FissionException;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\ContentRepository\Exception\NodeException;
 use Neos\Flow\Annotations as Flow;

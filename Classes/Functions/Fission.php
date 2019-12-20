@@ -20,7 +20,7 @@ use Neos\Neos\Service\LinkingService;
 /**
  * @Flow\Scope("singleton")
  */
-class Fission implements FissionFunction
+class Fission
 {
     /**
      * @Flow\Inject
@@ -47,11 +47,9 @@ class Fission implements FissionFunction
     protected $linkingService;
 
     /**
-     * @param array $args
-     * @return mixed|void
-     * @throws FissionException
+     * @return Fission
      */
-    public function invoke(array $args = [])
+    public function __invoke()
     {
         return $this;
     }
@@ -65,7 +63,7 @@ class Fission implements FissionFunction
     }
 
     /**
-     * @param mixed $node
+     * @param NodeInterface|WrappedNode $node
      * @return WrappedNode
      */
     public function wrap($node): WrappedNode
@@ -90,15 +88,7 @@ class Fission implements FissionFunction
     }
 
     /**
-     * @return WrappedNode
-     */
-    public function documentNode(): WrappedNode
-    {
-        return new WrappedNode($this->fissionContext->getDocumentNode());
-    }
-
-    /**
-     * @param mixed $node
+     * @param NodeInterface|WrappedNode $node
      * @return string
      */
     public function nodeRoot($node): string
@@ -107,7 +97,7 @@ class Fission implements FissionFunction
     }
 
     /**
-     * @param mixed $node
+     * @param NodeInterface|WrappedNode $node
      * @return string
      */
     public function nodeUri($node): string

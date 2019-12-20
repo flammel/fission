@@ -1,5 +1,5 @@
+# Comment the following configuration to use Fission together with Fusion instead of replacing Fusion.
 -
-  #  requestFilter: 'isPackage("Neos.Neos") && isController("Frontend\Node") && false'
   requestFilter: 'isPackage("Neos.Neos") && isController("Frontend\Node")'
   viewObjectName: 'Flammel\Fission\View\FissionView'
   options: {}
