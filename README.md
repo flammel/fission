@@ -26,7 +26,16 @@ composer require flammel/fission
 
 Please familiarize yourself with [Twig](https://twig.symfony.com/doc/3.x/templates.html) before reading this guide.
 
-The rendering of a Neos page (document node) starts in the `FissionView`.
+### Replacing Fusion with Fission
+
+To replace the Fusion view layer with Fission, add the following configuration to `Configuration/Views.yaml`
+
+    - 
+      requestFilter: 'isPackage("Neos.Neos") && isController("Frontend\Node")'
+      viewObjectName: 'Flammel\Fission\View\FissionView'
+      options: {}
+
+The rendering of a Neos page (document node) will now start in the `FissionView`.
 This view will attempt to render a Twig file that is named after the document node's type.
 For example, if the document node's type is `Neos.Neos:Page`, then Fission will attempt to render the Twig file `Neos.Neos/Page.twig`.
 It will look for this file in all paths that are configured in the `Flammel.Fission.templatePaths` setting.
@@ -41,6 +50,21 @@ Flammel:
 ```
 
 This Twig file is the first _component_ that is rendered.
+
+### Calling Fission from Fusion
+
+If you want to keep the Fusion view layer, but still use Fission in your templates, use the
+`Flammel.Fission:Component` Fusion prototype to render a Fission component from within Fusion:
+
+```
+prototype(MyPackage:MyComponent) < prototype(Neos.Fusion:Component) {
+    renderer = afx`
+        <div>
+            <Flammel.Fission:Component component="Neos.NodeTypes:Image" node={node} width="500" height="500" />
+        </div>
+    `
+}
+```
 
 ### Components
 
@@ -313,20 +337,6 @@ The function is used like any other Twig function:
 
 <h1>{{ props.node.prop("title") }}</h1>
 {{ additionalData.importantInformation }}
-```
-
-## Calling Fission from Fusion
-
-This package includes a Fusion prototype that allows us to call Fission from within Fusion:
-
-```
-prototype(MyPackage:MyComponent) < prototype(Neos.Fusion:Component) {
-    renderer = afx`
-        <div>
-            <Flammel.Fission:Component component="Neos.NodeTypes:Image" node={node} width="500" height="500" />
-        </div>
-    `
-}
 ```
 
 ## Development
