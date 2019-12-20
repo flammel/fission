@@ -2,6 +2,8 @@
 
 Neos plugin to replace Fusion with Twig.
 
+See [flammel/fission-demo](https://github.com/flammel/fission-demo) for a site package that implements the view layer using Fission.
+
 ## Installation
 
 The package is not on [packagist.org](https://packagist.org/). So the first step is to add the GitHub repository to your `composer.json:`
