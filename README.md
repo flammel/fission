@@ -131,6 +131,9 @@ Now invoking this component with only one prop, like `{{ component("FancyButton"
 <button type="button" class="fancy">Save</button>
 ```
 
+Note that due to the way Twig handles named arguments, a prop that is passed with name `camelCase` will be available in
+the component as `props.camel_case`.
+
 #### Slots
 
 The problem with props is that we cannot easily use them to pass markup to a component.
@@ -181,6 +184,33 @@ When Zweig renders the component `AboutUs`, the result will be the following HTM
         <p>Lorem ipsum ...</p>
     </body>
 </html>
+```
+
+To summarize, `with` and `fill` allow us to pass data to the component.
+We can also pass data from the component to the caller of the component, using `expose` and `parent`:
+
+```
+{# file: ProductGrid.twig #}
+
+{% component "Grid" with {"items": props.products} %}
+    {% fill "item" %}
+        <h1>{{ parent.current.title }}</h1>
+        <img src="{{ parent.current.imgSrc }}" alt="" />
+    {% endfill %}
+{% endcomponent %}
+```
+
+```
+{# file: Grid.twig #}
+
+<div class="grid">
+    {% for item in props.items %}
+        <div class="grid-item">
+            {% slot "item" expose {"current": item} %}
+            {% endslot %}
+        </div>
+    {% endfor %}
+</div>
 ```
 
 ### Nodes
@@ -253,7 +283,7 @@ First, we have to register the function in the settings:
 Flammel:
   Fission:
     functions:
-      productData: Vendor\MyPackage\ProductDataFunction
+      productData: [Vendor\MyPackage\ProductDataFunction, getData]
 ```
 
 Now we can implement our function:
@@ -261,11 +291,10 @@ Now we can implement our function:
 ```
 <?php namespace Vendor\MyPackage;
 
-class ProductDataFunction implements FissionFunction
+class ProductDataFunction
 {
-    public function invoke(...$args)
+    public function getData($productNode)
     {
-        $productNode = $args[0];
         return [
             'importantInformation' => $this->getImportantInformation($productNode)
         ];
@@ -274,57 +303,11 @@ class ProductDataFunction implements FissionFunction
 ```
 
 We can use all features of Flow/Neos in this implementation, including dependency injection.
-
 The function is used like any other Twig function:
 
 ```
 {# file: Product.twig #}
 {% set additionalData = productData(props.node) %}
-
-<h1>{{ props.node.prop("title") }}</h1>
-{{ additionalData.importantInformation }}
-```
-
-Note that all classes in the `Flammel.Fission.functions` setting must implement the `FissionFunction` interface.
-The name of the function is determined by the key in the settings file.
-
-The above approach to defining functions has two drawbacks:
-First, we have to change the settings and implement the interface for every function we want to define.
-Second, if two packages define two functions with the same name, it is not immediately clear which implementation will be used.
-To address these issues, I recommend creating a "container" `FissionFunction` implementation,
-using a name that is unlikely to be used by other packages.
-We can then define methods on this class and use those as functions in our templates:
-
-```
-# file: Settings.yaml
-Flammel:
-  Fission:
-    functions:
-      myPackage: Vendor\MyPackage\MyPackageFunction
-```
-
-```
-<?php namespace Vendor\MyPackage;
-
-class MyPackageFunction implements FissionFunction
-{
-    public function invoke(...$args)
-    {
-        return $this;
-    }
-
-    public function productData($productNode): array
-    {
-        return [
-            'importantInformation' => $this->getImportantInformation($productNode)
-        ];
-    }
-}
-```
-
-```
-{# file: Product.twig #}
-{% set additionalData = myPackage().productData(props.node) %}
 
 <h1>{{ props.node.prop("title") }}</h1>
 {{ additionalData.importantInformation }}
