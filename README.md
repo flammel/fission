@@ -313,6 +313,20 @@ The function is used like any other Twig function:
 {{ additionalData.importantInformation }}
 ```
 
+## Calling Fission from Fusion
+
+This package includes a Fusion prototype that allows us to call Fission from within Fusion:
+
+```
+prototype(MyPackage:MyComponent) < prototype(Neos.Fusion:Component) {
+    renderer = afx`
+        <div>
+            <Flammel.Fission:Component component="Neos.NodeTypes:Image" node={node} width="500" height="500" />
+        </div>
+    `
+}
+```
+
 ## Development
 
 Run static analysis ([PHPStan](https://github.com/phpstan/phpstan) and [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)):

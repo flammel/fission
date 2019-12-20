@@ -4,6 +4,7 @@
     "type": "neos-plugin",
     "license": "MIT",
     "require": {
+        "ext-json": "*",
         "php": ">=7.3.0",
         "neos/neos": "^4.3|^5.0",
         "neos/neos-ui": "^4.0|^5.0",
