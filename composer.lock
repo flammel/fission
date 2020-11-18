@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e1626b5eeb1fba87b7146abeb70a702",
+    "content-hash": "4c0db6ef6b273201433fb1b98368af2c",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1320,6 +1320,7 @@
             "keywords": [
                 "reflection"
             ],
+            "abandoned": "roave/better-reflection",
             "time": "2018-06-14T14:45:07+00:00"
         },
         {
@@ -1328,12 +1329,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/flammel/zweig.git",
-                "reference": "7493c43b1f2fc3fed1398d2da5d33508c4f3e969"
+                "reference": "4a6b2f8063195126a3d3f16c85022382392d1d03"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/flammel/zweig/zipball/7493c43b1f2fc3fed1398d2da5d33508c4f3e969",
-                "reference": "7493c43b1f2fc3fed1398d2da5d33508c4f3e969",
+                "url": "https://api.github.com/repos/flammel/zweig/zipball/4a6b2f8063195126a3d3f16c85022382392d1d03",
+                "reference": "4a6b2f8063195126a3d3f16c85022382392d1d03",
                 "shasum": ""
             },
             "require": {
@@ -1364,7 +1365,7 @@
                 "source": "https://github.com/flammel/zweig/tree/master",
                 "issues": "https://github.com/flammel/zweig/issues"
             },
-            "time": "2019-12-13T12:31:29+00:00"
+            "time": "2019-12-20T18:38:00+00:00"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -4710,16 +4711,16 @@
         },
         {
             "name": "typo3fluid/fluid",
-            "version": "2.6.8",
+            "version": "2.6.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3/Fluid.git",
-                "reference": "854c3b682aa4d2899f4246276cc60ad52cd8e34e"
+                "reference": "f20db4e74cf9803c6cffca2ed2f03e1b0b89d0dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/Fluid/zipball/854c3b682aa4d2899f4246276cc60ad52cd8e34e",
-                "reference": "854c3b682aa4d2899f4246276cc60ad52cd8e34e",
+                "url": "https://api.github.com/repos/TYPO3/Fluid/zipball/f20db4e74cf9803c6cffca2ed2f03e1b0b89d0dc",
+                "reference": "f20db4e74cf9803c6cffca2ed2f03e1b0b89d0dc",
                 "shasum": ""
             },
             "require": {
@@ -4745,7 +4746,7 @@
                 "LGPL-3.0-or-later"
             ],
             "description": "The TYPO3 Fluid template rendering engine",
-            "time": "2019-12-02T06:33:10+00:00"
+            "time": "2020-11-16T21:38:14+00:00"
         },
         {
             "name": "zendframework/zend-code",
@@ -4798,6 +4799,7 @@
                 "code",
                 "zf"
             ],
+            "abandoned": "laminas/laminas-code",
             "time": "2019-10-05T23:18:22+00:00"
         },
         {
@@ -4852,6 +4854,7 @@
                 "events",
                 "zf2"
             ],
+            "abandoned": "laminas/laminas-eventmanager",
             "time": "2018-04-25T15:33:34+00:00"
         }
     ],
@@ -6221,6 +6224,7 @@
             "keywords": [
                 "tokenizer"
             ],
+            "abandoned": true,
             "time": "2019-09-17T06:23:10+00:00"
         },
         {
@@ -7069,7 +7073,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
+        "ext-json": "*",
         "php": ">=7.3.0"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }
